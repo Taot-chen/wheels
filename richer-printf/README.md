@@ -178,3 +178,15 @@
 
 ![alt text](./images/image-3.png)
 
+
+
+
+### 5 python 中调用
+
+python 调用使用的是 ctypes 的方法，这种方法可以很方便的直接使用 C++ 的源码，不需要对 C++ 源码做修改。需要先将 C++ 源码编译成共享库，之后再在 python 里面调用。
+python 调用示例：[pycall](https://github.com/Taot-chen/wheels/blob/main/richer-printf/pycall)
+
+```bash
+cd pycall
+g++ -shared -o richer_printf.so -fPIC richer_printf.cpp
+```

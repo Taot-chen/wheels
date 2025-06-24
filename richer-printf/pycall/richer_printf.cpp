@@ -3,7 +3,7 @@
 
 extern "C" {
     void logging(char* msg, char* color) {
-        switch (hash(color)) {    //  编译器计算 hash 值
+        switch (hash(color)) {    //  编译期计算 hash 值
             case hash("red"):
                 PRINT_RED("%s", msg);
                 break;

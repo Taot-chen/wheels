@@ -47,3 +47,13 @@ g++ -shared -o richer_printf.so -fPIC richer_printf.cpp
 - [ ] 多设备支持
 - [ ] 更全面的键码映射
 - [ ] 资源占用优化
+
+
+## raspberrypi-tools
+
+[raspberrypi-tools]()
+
+树莓派日常使用中的一些实用工具：
+
+* [clash_proxy](): 一键设置代理
+* [watch_cpu_temp](): 查看 CPU 温度

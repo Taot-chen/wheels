@@ -11,6 +11,8 @@
 #include <thread>
 #include <atomic>
 #include <csignal>
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 using namespace std::chrono;
@@ -61,7 +63,7 @@ void monitor_keyboard(const string& device_path) {
     ioctl(fd, EVIOCGNAME(sizeof(name)), name);
     cout << "监控设备: " << name << endl;
 
-    struct input_envet ev;
+    struct input_event ev;
     while (running) {
         ssize_t n = read(fd, &ev, sizeof(ev));
         if (n == -1) {
@@ -79,7 +81,7 @@ void monitor_keyboard(const string& device_path) {
             auto now = steady_clock::now();
             double interval = duration_cast<duration<double>>(now - last_key_time).count();
 
-            key_counts[ev.codes]++;
+            key_counts[ev.code]++;
             total_keys++;
             key_intervals.push_back(interval);
             last_key_time = now;
@@ -137,7 +139,7 @@ void save_states(const string& filename) {
 
         outfile.close();
         cout << "统计结果已保存到 " << filename << endl;
-    } esle {
+    } else {
         cerr << "无法打开文件 " << filename << endl;
     }
 }
@@ -179,7 +181,7 @@ int main() {
     // 查找键盘设备
     string keyboard_device = find_keyboard_device();
     if (keyboard_device.empty()) {
-        serr << "找不到可用的键盘设备" << endl;
+        cerr << "找不到可用的键盘设备" << endl;
         return 1;
     }
 

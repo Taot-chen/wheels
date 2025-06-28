@@ -22,3 +22,28 @@ python 调用示例：[pycall](https://github.com/Taot-chen/wheels/blob/main/ric
 cd pycall
 g++ -shared -o richer_printf.so -fPIC richer_printf.cpp
 ```
+
+
+## keyboard-stats
+
+[keyboard-stats](https://github.com/Taot-chen/wheels/tree/main/keyboard-stats)
+
+一个对键盘设备进行监控统计的工具：
+
+* 按键统计：记录每个键的按下次数
+* 打字速度：计算每分钟输入字符数
+* 敲键速度：计算每秒按键次数
+* 按键间隔：统计两次按键之间的时间间隔
+* 结果保存：将统计结果保存到文本文件
+
+
+
+----------
+
+**TODO**
+
+- [ ] 添加图形界面或实时数据显示
+- [ ] 更多的统计信息
+- [ ] 多设备支持
+- [ ] 更全面的键码映射
+- [ ] 资源占用优化

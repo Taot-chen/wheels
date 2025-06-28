@@ -1,9 +1,9 @@
 树莓派日常使用中的一些实用工具：
 
-* [clash_proxy](): 一键设置代理
+* [clash_proxy](https://github.com/Taot-chen/wheels/blob/main/raspberrypi-tools/src/clash_proxy.sh): 一键设置代理
 
 
-* [watch_cpu_temp](): 查看 CPU 温度
+* [watch_cpu_temp](https://github.com/Taot-chen/wheels/blob/main/raspberrypi-tools/src/watch_cpu_temp.sh): 查看 CPU 温度
 
 
 ```bash

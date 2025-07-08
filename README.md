@@ -57,3 +57,20 @@ g++ -shared -o richer_printf.so -fPIC richer_printf.cpp
 
 * [clash_proxy](https://github.com/Taot-chen/wheels/blob/main/raspberrypi-tools/src/clash_proxy.sh): 一键设置代理
 * [watch_cpu_temp](https://github.com/Taot-chen/wheels/blob/main/raspberrypi-tools/src/watch_cpu_temp.sh): 查看 CPU 温度
+
+
+
+## watch-net
+
+[watch-net](https://github.com/Taot-chen/wheels/tree/main/watch-net)
+
+一个实用的 linux 网卡监控脚本：
+
+```bash
+./watch_net.sh
+# 运行脚本（输出示例）
+网卡     下载 ▼           上传 ▲
+--------------------------------------
+eth0       1 KB/s               2 KB/s
+wlan0      232 B/s              0 B/s
+```

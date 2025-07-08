@@ -46,7 +46,10 @@ INTERFACES=$(ls /sys/class/net | grep -v 'lo')  # 过滤掉lo网卡
 chmod +x ./watch_net.sh
 ./watch_net.sh
 # 运行脚本（输出示例）
-[eth0] ▼ 1.24 MB/s ▲ 560.78 KB/s | [wlan0] ▼ 320 KB/s ▲ 1.1 MB/s
+网卡     下载 ▼           上传 ▲
+--------------------------------------
+eth0       1 KB/s               2 KB/s
+wlan0      232 B/s              0 B/s
 ```
 
 若需监控指定网卡（如只监控 `eth*`），修改：

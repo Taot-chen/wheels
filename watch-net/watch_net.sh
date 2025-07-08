@@ -1,53 +1,47 @@
 #!/bin/bash
-# 自动获取所有非回环网卡名称
-INTERFACES=$(ls /sys/class/net | grep -v 'lo')
-LOG="/var/log/net_speed.log"  # 可选日志路径
-THRESHOLD=10240  # 流量阈值（KB/s）
+INTERFACES=$(ls /sys/class/net | grep -Ev 'lo|docker|veth|br-')
 
-# 单位转换函数（B → KB/MB/GB）
+# 使用 awk 替代 bc
 format_speed() {
     local speed=$1
-    if (( speed >= 1024**2 )); then
-        printf "%.2f GB/s" $(echo "$speed / 1024^2" | bc -l)
+    if (( speed >= 1073741824 )); then
+        awk "BEGIN {printf \"%.2f GB/s\", $speed / (1024 * 1024 * 1024)}"
+    elif (( speed >= 1048576 )); then
+        awk "BEGIN {printf \"%.2f MB/s\", $speed / (1024 * 1024)}"
     elif (( speed >= 1024 )); then
-        printf "%.2f MB/s" $(echo "$speed / 1024" | bc -l)
+        echo "$((speed / 1024)) KB/s"
     else
-        printf "%d KB/s" $speed
+        echo "$((speed)) B/s"
     fi
 }
 
-# 初始化流量计数器
 declare -A RX_PREV TX_PREV
 for intf in $INTERFACES; do
-    RX_PREV[$intf]=$(cat /sys/class/net/$intf/statistics/rx_bytes)
-    TX_PREV[$intf]=$(cat /sys/class/net/$intf/statistics/tx_bytes)
+    RX_PREV[$intf]=$(cat /sys/class/net/$intf/statistics/rx_bytes 2>/dev/null || echo 0)
+    TX_PREV[$intf]=$(cat /sys/class/net/$intf/statistics/tx_bytes 2>/dev/null || echo 0)
 done
 
-# 主循环：动态刷新多网卡流量
-while true; do
-    sleep 1
-    OUTPUT=""  # 清空输出缓存
+# 清屏并打印表头
+clear
+printf "\e[1;36m%-10s %-20s %-20s\e[0m\n" "网卡" "下载 ▼" "上传 ▲"
+echo "--------------------------------------"
 
+while true; do
+    printf "\e[3H"  
+    OUTPUT=""
     for intf in $INTERFACES; do
-        # 获取当前流量
-        RX_NOW=$(cat /sys/class/net/$intf/statistics/rx_bytes)
-        TX_NOW=$(cat /sys/class/net/$intf/statistics/tx_bytes)
-        
-        # 计算1秒内流量差
-        RX_SPEED=$(( RX_NOW - RX_PREV[$intf] ))
-        TX_SPEED=$(( TX_NOW - TX_PREV[$intf] ))
+        RX_NOW=$(cat /sys/class/net/$intf/statistics/rx_bytes 2>/dev/null || echo 0)
+        TX_NOW=$(cat /sys/class/net/$intf/statistics/tx_bytes 2>/dev/null || echo 0)
+        RX_SPEED=$((RX_NOW - ${RX_PREV[$intf]}))
+        TX_SPEED=$((TX_NOW - ${TX_PREV[$intf]}))
         RX_PREV[$intf]=$RX_NOW
         TX_PREV[$intf]=$TX_NOW
         
-        # 格式化输出
-        OUTPUT+="[$intf] ▼ \e[32m$(format_speed $RX_SPEED)\e[0m ▲ \e[31m$(format_speed $TX_SPEED)\e[0m | "
-        
-        # 超阈值告警（可选）
-        if (( RX_SPEED > THRESHOLD || TX_SPEED > THRESHOLD )); then
-            echo "[$(date)] 网卡 $intf 流量异常 ▼ ${RX_SPEED}KB/s ▲ ${TX_SPEED}KB/s" >> "$LOG"
-        fi
+        # 每行输出一个网卡（固定宽度对齐）
+        printf "%-10s \e[32m%-20s\e[0m \e[31m%-20s\e[0m\n" \
+            "$intf" \
+            "$(format_speed $RX_SPEED)" \
+            "$(format_speed $TX_SPEED)"
     done
-
-    # 单行刷新显示（ANSI转义码）
-    printf "\r\e[2K%s" "${OUTPUT%| }"  # 移除末尾竖线分隔符
+    sleep 1
 done
